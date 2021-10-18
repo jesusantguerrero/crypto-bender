@@ -21,7 +21,7 @@ import { AtButton } from "atmosphere-ui";
 
 defineProps({
     item: {
-        type: Array,
+        type: Object,
         required: true
     },
     mode: {

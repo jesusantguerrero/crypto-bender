@@ -1,5 +1,5 @@
 <template>
-  <section class="">
+  <section class="py-5">
     <div class="flex justify-between text-lg text-gray-300" v-if="showFilter">
       <div> {{ benders.length }} results</div>
       <div>
@@ -9,18 +9,21 @@
       </div>
     </div>
     
+    <div v-if="state.isLoading">
+      <i class="fa fa-spin fa-circle-notchs"></i>
+    </div>
+    
     <MarketGrid 
+      v-else
       class="w-full py-10 md:gap-5 grid-container" 
       :items="benders"
-      v-if="!state.isLoading"
       @item-clicked="buyItem"
     />  
   </section>
 </template>
 
 <script setup>
-import { useContract } from "../../utils/useContract";
-import { watch, ref, reactive, nextTick } from "@vue/runtime-core";
+import { watch, ref, reactive, nextTick, inject } from "@vue/runtime-core";
 import { ethers } from "ethers";
 import config from "../../config";
 import MarketGrid from "../MarketGrid.vue";
@@ -30,8 +33,9 @@ defineProps({
     type: Boolean,
     
   }
-})
-const { benderMarket, benderNTF, connectWallet } = useContract();
+});
+
+const { benderMarket, benderNTF, connectWallet } = inject('contract');
 let benders = ref([]);
 const state = reactive({
   isLoading: true

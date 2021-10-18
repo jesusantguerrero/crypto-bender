@@ -3,25 +3,31 @@
     <div class="w-full bg-transparent">
       <Header />
     </div>
-    <div class="bg-gray-700 content">
-        <MarketGrid 
-            class="max-w-5xl py-10 mx-auto md:gap-5 grid-container" 
-            :items="benders"
-            v-if="!state.isLoading"
-            @item-clicked="resellItem"
-            mode="sell"
-            operation-label="Sell"
-        />
+    <article class="bg-gray-800 content">
+        <section class="py-10 mx-auto max-w-7xl">
+          <h2 class="text-xl font-bold text-left text-gray-300"> My NFT's</h2>
+          <MarketGrid 
+              class="md:gap-5 grid-container" 
+              :items="benders"
+              v-if="!state.isLoading"
+              @item-clicked="resellItem"
+              mode="sell"
+              operation-label="Sell"
+          />
+        </section>
 
-        <MarketGrid 
-            class="max-w-5xl py-10 mx-auto md:gap-5 grid-container" 
-            :items="nonTokens"
-            v-if="!state.isLoading"
-            @item-clicked="sellItem"
-            mode="sell"
-            operation-label="Set for Sale"
-        />          
-    </div>
+        <!-- <section class="py-10 mx-auto max-w-7xl">
+          <h2 class="text-xl font-bold text-left text-gray-300"> Created tokens</h2>
+          <MarketGrid 
+              class=" md:gap-5 grid-container" 
+              :items="nonTokens"
+              v-if="!state.isLoading"
+              @item-clicked="sellItem"
+              mode="sell"
+              operation-label="Set for Sale"
+          />          
+        </section> -->
+    </article>
     <SiteFooter />
   </main>
 </template>
@@ -32,7 +38,6 @@ import { useContract } from "../utils/useContract";
 import { watch, ref, reactive } from "@vue/runtime-core";
 import { ethers } from "ethers";
 import config from "../config";
-import { AtButton } from "atmosphere-ui";
 import MarketGrid from "../components/MarketGrid.vue";
 import SiteFooter from "./Landing/SiteFooter.vue";
 
@@ -43,28 +48,32 @@ const state = reactive({
 });
 
 const fetchMarketItems = async () => {
-  const marketItems = await benderMarket.value.getMyNFTs();
-  benders.value = await Promise.all(marketItems.map(async (item) => {
-    const bender = await benderNTF.value.getBender(item.tokenId);
-    
-    return {
-      itemId: item.itemId,
-      name: 'Item',
-      price: ethers.utils.formatEther(item.price),
-      priceETH: item.price,
-      tokenId: item.tokenId,
-      seller: item.seller,
-      owner: item.owner,
-      name: bender.name,
-      element: bender.element
+  try {
+    const marketItems = await benderMarket.value.getMyNFTs();
+    benders.value = await Promise.all(marketItems.map(async (item) => {
+      const bender = await benderNTF.value.getBender(item.tokenId);
+      
+      return {
+        itemId: item.itemId,
+        name: 'Item',
+        price: ethers.utils.formatEther(item.price),
+        priceETH: item.price,
+        tokenId: item.tokenId,
+        seller: item.seller,
+        owner: item.owner,
+        name: bender.name,
+        element: bender.element
+      }
+    }));
+  
+    if (signer.value.address && benderNTF.value) {
+      console.log(await benderNTF.value.balanceOf(signer.value.address));
+  
     }
-  }));
-
-  if (signer.value.address && benderNTF.value) {
-    console.log(await benderNTF.value.balanceOf(signer.value.address));
-
+    state.isLoading = false;
+  } catch (err) {
+    state.isLoading = false;
   }
-  state.isLoading = false;
 }
 
 const nonTokens = ref([]);
