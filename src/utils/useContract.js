@@ -91,10 +91,10 @@ export const useContract = () => {
     
     const disconnectWallet  = async () => {
         if (wallet.value.close) {
-        await wallet.value.close()
-        web3Modal.clearCachedProvider();
+            await wallet.value.close()
         }
         
+        web3Modal.clearCachedProvider();
         signer.value = null;
         provider.value = null;
         initContract();
@@ -122,7 +122,7 @@ export const useContract = () => {
     }
     
     const setProvider = async () => {
-        provider.value = new ethers.providers.JsonRpcProvider();
+        provider.value = new ethers.providers.JsonRpcProvider(config.rpcURL, "any");
     }
 
     onMounted(async () => {

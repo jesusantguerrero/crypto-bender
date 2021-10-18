@@ -7,6 +7,7 @@
 <script setup>
 import { provide, ref, watchEffect } from "vue";
 import { AuthState } from "lumiere-utils/useAuth";
+import { useContract } from "../../utils/useContract";
 
 const props = defineProps({
     provider: {
@@ -37,6 +38,9 @@ watchEffect(async () => {
     }
 })
 
+const contract = useContract();
 provide('notifications', notifications);
 provide('updateNotification', updateNotification);
+provide('contract', contract);
+
 </script>

@@ -6,6 +6,6 @@ export default defineConfig({
   plugins: [vue()],
   optimizeDeps: {
     include: ["@supabase/supabase-js"],
-    exclude: ['lumiere-utils', 'atmosphere-ui']
+    exclude: ['lumiere-utils']
   }
 })

@@ -5,16 +5,18 @@
     link-class="font-bold text-white transition hover:text-roti hover:font-bold"
     :actions="state.actions"
     dot-class="text-roti"
+    @action="contract.connectWallet()"
 >
 
   <template v-slot:actions v-if="AppState.user">
-    <div class="text-gray-400">
+    <div class="flex items-center text-gray-400">
       <div>
-        {{ AppState.user ? 'Logged User' : 'Nada' }}
+        <div>
+          {{ AppState.provider.balance || 0}} ETH
+        </div>
       </div>
-
       <div>
-        {{ AppState.provider.balance || 0}} ETH
+        <AppUserButton :user="AppState.user" @logout="contract.disconnectWallet()" />
       </div>
     </div>
   </template>
@@ -23,9 +25,10 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, inject } from "vue";
 import { AtSiteHeader } from "atmosphere-ui";
 import AppState from "../../utils/AppState";
+import AppUserButton from "../../components/AppUserButton.vue";
 
 const state = {
   title: "CryptoBenders",
@@ -57,10 +60,11 @@ const state = {
     },
     {
       name: "Start",
-      url: "/register",
       class: 'bg-roti px-10 py-2 text-white hover:bg-roti-600 transition',
       emit: true
     },
   ],
 };
+
+const contract = inject('contract');
 </script>

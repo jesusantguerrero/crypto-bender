@@ -1,8 +1,11 @@
 const colors = require('tailwindcss/colors');
 
 module.exports = {
-  jit: true,
-  purge: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
+  // jit: true,
+  purge: [
+    './index.html', 
+    './src/**/*.{vue,js,ts,jsx,tsx}', 
+    "./node_modules/atmosphere-ui/**.{vue,js,ts,jsx,tsx}"],
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
