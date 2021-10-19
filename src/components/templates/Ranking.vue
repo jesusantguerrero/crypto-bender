@@ -11,7 +11,8 @@
 </template>
 
 <script setup>
-import { watch, reactive, inject } from "vue";
+import { watch, reactive } from "vue";
+import { useContract } from "../../utils/useContract";
 import BenderSmallCard from "../BenderSmallCard.vue";
 
 defineProps({
@@ -21,7 +22,7 @@ defineProps({
   }
 });
 
-const { benderNTF } = inject('contract');
+const { benderNFT } = useContract();
 const state = reactive({
   isLoading: true,
   benders: []
@@ -29,7 +30,7 @@ const state = reactive({
 
 const fetchMarketItems = async () => {
   try {
-    const benders = await benderNTF.value.getBenders();
+    const benders = await benderNFT.value.getBenders();
 
     state.benders = benders.map(bender => {  
       return {
@@ -45,9 +46,9 @@ const fetchMarketItems = async () => {
   }
 }
 
-watch(() => benderNTF.value, () => {
-  if (benderNTF.value) {
+watch(() => benderNFT.value, () => {
+  if (benderNFT.value) {
       fetchMarketItems();
     }
-});
+}, { immediate: true });
 </script>

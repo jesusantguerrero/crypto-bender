@@ -15,4 +15,5 @@ export default {
     bendingMarketAddress: import.meta.env.VITE_BENDING_MARKET_ADDRESS,
     rpcURL: import.meta.env.VITE_RPC_URL,
     mode: import.meta.env.VITE_CONTRACT_MODE || 'prod',
+    chainId: import.meta.env.VITE_CHAIN_ID,
 }

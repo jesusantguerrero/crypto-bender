@@ -34,14 +34,14 @@
 
 <script setup>
 import Header from "./Landing/Header.vue";
-import { useContract } from "../utils/useContract";
 import { watch, ref, reactive } from "@vue/runtime-core";
 import { ethers } from "ethers";
 import config from "../config";
 import MarketGrid from "../components/MarketGrid.vue";
 import SiteFooter from "./Landing/SiteFooter.vue";
+import { useContract } from "../utils/useContract";
 
-const { benderMarket, benderNTF, connectWallet, signer } = useContract();
+const { userMarket, userNFT, connectWallet, signer } = useContract();
 let benders = ref([]);
 const state = reactive({
   isLoading: true
@@ -49,9 +49,9 @@ const state = reactive({
 
 const fetchMarketItems = async () => {
   try {
-    const marketItems = await benderMarket.value.getMyNFTs();
+    const marketItems = await userMarket.value.getMyNFTs();
     benders.value = await Promise.all(marketItems.map(async (item) => {
-      const bender = await benderNTF.value.getBender(item.tokenId);
+      const bender = await userNFT.value.getBender(item.tokenId);
       
       return {
         itemId: item.itemId,
@@ -66,8 +66,8 @@ const fetchMarketItems = async () => {
       }
     }));
   
-    if (signer.value.address && benderNTF.value) {
-      console.log(await benderNTF.value.balanceOf(signer.value.address));
+    if (signer.value.address && userNFT.value) {
+      console.log(await userNFT.value.balanceOf(signer.value.address));
   
     }
     state.isLoading = false;
@@ -78,7 +78,7 @@ const fetchMarketItems = async () => {
 
 const nonTokens = ref([]);
 const fetchMyBenders = async () => {
-  const tokens = await benderNTF.value.getMyBenders();
+  const tokens = await userNFT.value.getMyBenders();
   nonTokens.value = tokens.map((item) => ({
       price: 0,
       priceETH: 0,
@@ -90,21 +90,21 @@ const fetchMyBenders = async () => {
   }))
 }
 
-watch(() => benderMarket.value, () => {
-  if (benderMarket.value) {
+watch(() => userMarket.value, () => {
+  if (userMarket.value) {
     fetchMarketItems();
     fetchMyBenders();
   }
-});
+}, { immediate: true });
 
 const sellItem = async (token) => {
   await connectWallet();
   if (!token.sellPrice) {
     alert("Set a price for the item");
   }
-  const listPricing = await benderMarket.value.getListingPrice();
+  const listPricing = await userMarket.value.getListingPrice();
   const price = ethers.utils.parseEther(token.sellPrice);
-  const trx = await benderMarket.value.createMarketItem(config.bendingAddress, token.tokenId, price,  { value: listPricing });
+  const trx = await userMarket.value.createMarketItem(config.bendingAddress, token.tokenId, price,  { value: listPricing });
   trx.wait();
   fetchMarketItems();
   alert("The item is on sale");
@@ -115,9 +115,9 @@ const resellItem = async (marketItem) => {
   if (!marketItem.sellPrice) {
     alert("Set a price for the item");
   }
-  const listPricing = await benderMarket.value.getListingPrice();
+  const listPricing = await userMarket.value.getListingPrice();
   const price = ethers.utils.parseEther(marketItem.sellPrice);
-  const trx = await benderMarket.value.resellMarketItem(config.bendingAddress, marketItem.itemsId, price,  { value: listPricing });
+  const trx = await userMarket.value.resellMarketItem(config.bendingAddress, marketItem.itemsId, price,  { value: listPricing });
   trx.wait();
   fetchMarketItems();
   alert("The iten is on the Marketplace");

@@ -8,15 +8,19 @@
     @action="contract.connectWallet()"
 >
 
-  <template v-slot:actions v-if="AppState.user">
+  <template v-slot:actions>
     <div class="flex items-center text-gray-400">
-      <div>
+      <div v-if="AppState.user" class="mr-2">
         <div>
           {{ AppState.provider.balance || 0}} ETH
         </div>
       </div>
       <div>
-        <AppUserButton :user="AppState.user" @logout="contract.disconnectWallet()" />
+        <AtUserButton 
+          :user="AppState.user"
+          :options="state.options.value"
+          @logout="contract.disconnectWallet()" 
+        />
       </div>
     </div>
   </template>
@@ -26,9 +30,8 @@
 
 <script setup>
 import { computed, inject } from "vue";
-import { AtSiteHeader } from "atmosphere-ui";
+import { AtSiteHeader, AtUserButton } from "atmosphere-ui";
 import AppState from "../../utils/AppState";
-import AppUserButton from "../../components/AppUserButton.vue";
 
 const state = {
   title: "CryptoBenders",
@@ -64,6 +67,19 @@ const state = {
       emit: true
     },
   ],
+  options: computed(() => ({
+    account: {
+      label: "General options",
+      sections: [
+        ["Profile", "/settings/profile"],
+        ["Favorites", "/favorites"],
+        ["My Collection", "/my-items"],
+        ["Favorites", "/settings"],
+        [""],
+        ["logout", { emit: 'logout' }],
+      ]
+    }
+  }))
 };
 
 const contract = inject('contract');

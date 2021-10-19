@@ -10,7 +10,7 @@
     </div>
     
     <div v-if="state.isLoading">
-      <i class="fa fa-spin fa-circle-notchs"></i>
+      <i class="fa fa-spin fa-circle-notch"></i>
     </div>
     
     <MarketGrid 
@@ -35,7 +35,7 @@ defineProps({
   }
 });
 
-const { benderMarket, benderNTF, connectWallet } = inject('contract');
+const { benderMarket, benderNFT, connectWallet } = inject('contract');
 let benders = ref([]);
 const state = reactive({
   isLoading: true
@@ -44,7 +44,7 @@ const state = reactive({
 const fetchMarketItems = async () => {
   const marketItems = await benderMarket.value.getMarketItems();
   benders.value = await Promise.all(marketItems.map(async (item) => {
-    const bender = await benderNTF.value.getBender(item.tokenId.toNumber());
+    const bender = await benderNFT.value.getBender(item.tokenId.toNumber());
     
     return {
       itemId: item.itemId,
@@ -57,16 +57,19 @@ const fetchMarketItems = async () => {
       name: bender.name,
       element: bender.element
     }
-  }));
+  })).catch(err => {
+    console.log(err)
+  }).finally(() => {
+    state.isLoading = false;
+  });
 
-  state.isLoading = false;
 }
 
 watch(() => benderMarket.value, () => {
   if (benderMarket.value) {
       fetchMarketItems();
     }
-});
+}, { immediate: true });
 
 
 const buyItem = async (marketItem) => {

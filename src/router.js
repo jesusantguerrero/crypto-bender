@@ -1,5 +1,5 @@
 import Landing from "./pages/Landing/index.vue";
-import Login from "./pages/Auth/Login.vue";
+import Login from "./pages/Login.vue";
 import Dashboard from "./pages/Dashboard.vue";
 import MarketPlace from "./pages/MarketPlace.vue";
 import MyItems from "./pages/MyItems.vue";

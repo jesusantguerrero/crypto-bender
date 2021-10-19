@@ -19,14 +19,14 @@
 
 <script setup>
 import Header from "./Landing/Header.vue";
-import { useContract } from "../utils/useContract";
 import { watch, ref, reactive } from "@vue/runtime-core";
 import { ethers } from "ethers";
 import config from "../config";
 import MarketGrid from "../components/MarketGrid.vue";
 import SiteFooter from "./Landing/SiteFooter.vue";
+import { useContract } from "../utils/useContract";
 
-const { benderMarket, benderNTF, connectWallet, signer } = useContract();
+const { benderMarket, benderNFT, connectWallet, signer } = useContract();
 let benders = ref([]);
 const state = reactive({
   isLoading: true
@@ -35,7 +35,7 @@ const state = reactive({
 const fetchMarketItems = async () => {
   const marketItems = await benderMarket.value.getMyNFTs();
   benders.value = await Promise.all(marketItems.map(async (item) => {
-    const bender = await benderNTF.value.getBender(item.tokenId);
+    const bender = await benderNFT.value.getBender(item.tokenId);
     
     return {
       itemId: item.itemId,
@@ -50,8 +50,8 @@ const fetchMarketItems = async () => {
     }
   }));
 
-  if (signer.value.address && benderNTF.value) {
-    console.log(await benderNTF.value.balanceOf(signer.value.address));
+  if (signer.value.address && benderNFT.value) {
+    console.log(await benderNFT.value.balanceOf(signer.value.address));
 
   }
   state.isLoading = false;
