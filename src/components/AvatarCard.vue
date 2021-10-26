@@ -15,7 +15,7 @@ const props = defineProps({
         }
     })
 
-    const element = props.bender.element.toLowerCase();
+    const element = props.bender?.element?.toLowerCase() || 'water';
 
     const nationColor = computed(() => {
         const elements = {
@@ -35,7 +35,7 @@ const props = defineProps({
             water: '/water-bg.jpg',
         };
 
-        const bgImage = bgImages[element]
+        const bgImage = props.bender.image || bgImages[element];
 
         return {
             backgroundImage: `url(${bgImage})`,
@@ -68,7 +68,7 @@ const props = defineProps({
 
 <template>
 <div>
-    <div class="relative w-56 px-2 py-5 rounded-md shadow-md h-72 ring ring-offset-base-100 ring-offset-2" 
+    <div class="relative w-56 px-2 py-5 overflow-hidden rounded-md shadow-md h-72 ring ring-offset-base-100 ring-offset-2" 
     :class="[isSelected ? 'ring-red-400' : 'ring-transparent', nationColor ]"
     >
         <div class="flex items-center justify-center p-1 mx-auto bg-white rounded-full w-28 h-28 avatar-picture">
@@ -78,6 +78,7 @@ const props = defineProps({
             </div>
         </div>
         <h4 class="mt-2 font-bold text-center text-white"> {{ bender.name }} </h4>
+        <!-- <img :src="bender.image" alt="" v-if="bender.image" class="absolute top-0"> -->
 
         <span @click="$emit('levelUp')" class="absolute top-0 left-0 flex items-center justify-center text-sm font-bold text-white rounded-tl-md w-9 h-9" :class="orbeColor">{{ bender.level }}</span>
         <span @click.stop="$emit('attack')" title="Attack" class="absolute z-40 flex items-center justify-center text-sm text-white border-2 border-white rounded-full w-9 h-9 right-2 bottom-2" :class="[orbeColor]">

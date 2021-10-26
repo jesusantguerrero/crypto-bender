@@ -10,11 +10,13 @@ export const defineContract = () => {
     const benderNFT = ref(null);
     const userMarket = ref(null);
     const userNFT = ref(null);
+    const Market = ref(null);
+    const Cockfighter = ref(null);
     // blockchain
     const { connectWallet, disconnectWallet, signer, state, startApp, provider } = useBlockchain();
 
     const initContract = async (signer) => {
-        const { BENDER, BENDER_MARKET } = await import(`../utils/contracts.${config.mode}.js`)
+        const { BENDER, BENDER_MARKET, MARKET, NFT } = await import(`../utils/contracts.${config.mode}.js`)
         benderMarket.value  = new ethers.Contract(
             config.bendingMarketAddress,
             BENDER_MARKET.abi, 
@@ -38,6 +40,19 @@ export const defineContract = () => {
             BENDER.abi, 
             signer || provider.value
         );
+        
+        console.log(config.marketAddress, config, "Hola")
+        Cockfighter.value = new ethers.Contract(
+            config.roosterAddress,
+            NFT.abi,
+            provider.value
+        )
+
+        Market.value = new ethers.Contract(
+            config.marketAddress,
+            MARKET.abi,
+            provider.value
+        )
     }
 
     startApp.value = initContract;
@@ -53,6 +68,8 @@ export const defineContract = () => {
         benderMarket,
         benderNFT,
         userMarket,
-        userNFT
+        userNFT,
+        Market,
+        Cockfighter
     }
 }

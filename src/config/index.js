@@ -13,6 +13,8 @@ export default {
     // app env
     bendingAddress: import.meta.env.VITE_BENDING_ADDRESS,
     bendingMarketAddress: import.meta.env.VITE_BENDING_MARKET_ADDRESS,
+    roosterAddress: import.meta.env.VITE_ROOSTER_ADDRESS,
+    marketAddress: import.meta.env.VITE_MARKET_ADDRESS,
     rpcURL: import.meta.env.VITE_RPC_URL,
     mode: import.meta.env.VITE_CONTRACT_MODE || 'prod',
     chainId: import.meta.env.VITE_CHAIN_ID,

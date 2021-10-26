@@ -26,6 +26,7 @@
 import { watch, ref, reactive, nextTick, inject } from "@vue/runtime-core";
 import { ethers } from "ethers";
 import config from "../../config";
+import { useContract } from "../../utils/useContract";
 import MarketGrid from "../MarketGrid.vue";
 
 defineProps({
@@ -35,7 +36,7 @@ defineProps({
   }
 });
 
-const { benderMarket, benderNFT, connectWallet } = inject('contract');
+const { benderMarket, benderNFT, Market, Cockfighter, connectWallet } = useContract();
 let benders = ref([]);
 const state = reactive({
   isLoading: true
@@ -45,6 +46,7 @@ const fetchMarketItems = async () => {
   const marketItems = await benderMarket.value.getMarketItems();
   benders.value = await Promise.all(marketItems.map(async (item) => {
     const bender = await benderNFT.value.getBender(item.tokenId.toNumber());
+    
     
     return {
       itemId: item.itemId,
@@ -63,6 +65,26 @@ const fetchMarketItems = async () => {
     state.isLoading = false;
   });
 
+  let roosters = await Market.value.getMarketItems();
+  roosters = await Promise.all(roosters.map(async(item) => {
+    const tokenURI = await Cockfighter.value.tokenURI(item.tokenId.toNumber());
+    const bender = await fetch(tokenURI).then(data => data.json()).then( data => data);
+    return {
+      itemId: item.itemId,
+      price: ethers.utils.formatEther(item.price),
+      lastPrice: ethers.utils.formatEther(item.lastPrice),
+      priceETH: item.price,
+      tokenId: item.tokenId,
+      seller: item.seller,
+      owner: item.owner,
+      name: bender.name,
+      image: bender.image,
+      attributes: bender.attributes,
+      element: bender.element
+    }
+  }))
+
+  benders.value.push(...roosters);
 }
 
 watch(() => benderMarket.value, () => {
